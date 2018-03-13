@@ -7,7 +7,7 @@ Utility functions for Clojure Delight! Make your code spicy!
 ### Collection Functions:
 
 ```clojure
-(import '[utils.collection :as coll])
+(import '[paprika.collection :as coll])
 
 (def example-map {:a 10 :b 20})
 
@@ -27,7 +27,7 @@ assume we're asking for 10:20 in local time, or 13:20 in UTC (if we're not on DS
 To aid us on tests we're creating some helper reader macros:
 
 ```clojure
-(require '[utils.time :as time])
+(require '[paprika.time :as time])
 (def utc-time #time/utc "2011-10-20T10:00:00")
 (def local-time #time/local "2011-10-20T10:00:00")
 

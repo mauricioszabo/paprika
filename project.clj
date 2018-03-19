@@ -12,9 +12,5 @@
                                   [org.clojure/test.check "0.9.0"]]
                    :plugins [[lein-midje "3.2.1"]]}}
 
-  :deploy-repositories [["snapshots" {:url "https://acessocard.jfrog.io/acessocard/libs-snapshot-local/"
-                                      :username :env/jfrog_username
-                                      :password :env/jfrog_password}]
-                        ["releases" {:url "https://acessocard.jfrog.io/acessocard/libs-release-local/"
-                                     :username :env/jfrog_username
-                                     :password :env/jfrog_password}]])
+  :deploy-repositories [["snapshots" :clojars]
+                        ["releases" :clojars]])

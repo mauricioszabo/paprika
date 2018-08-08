@@ -1,4 +1,4 @@
-(defproject paprika "0.1.0-SNAPSHOT"
+(defproject paprika "0.1.1"
   :description "Simple utility functions"
   :url "http://github.com/mauricioszabo/paprika"
   :license {:name "Eclipse Public License"

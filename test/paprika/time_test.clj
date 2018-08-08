@@ -3,6 +3,17 @@
             [clj-time.coerce :as time-coerce]
             [paprika.time :as time]))
 
+(def yesterday (-> 1 time/days time/ago))
+(def tomorrow (-> 1 time/days time/from-now))
+(facts "when comparing dates"
+  (fact "will compare if it's less than another date"
+    (time/< yesterday (time/now) tomorrow) => true
+    (time/<= yesterday yesterday tomorrow) => true)
+
+  (fact "will compare if it's greater than another date"
+    (time/> tomorrow (time/now) yesterday) => true
+    (time/>= tomorrow yesterday yesterday) => true))
+
 (facts "about converting times"
   (fact "will convert times"
     (time/parse "12/10/1982 08:20:30" "dd/MM/yyyy hh:mm:ss")

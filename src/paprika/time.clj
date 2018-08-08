@@ -1,9 +1,10 @@
 (ns paprika.time
-  (:refer-clojure :exclude [second extend])
+  (:refer-clojure :exclude [second extend < <= > >=])
   (:require [clojure.walk :as walk]
             [clj-time.core :as time]
             [clj-time.format :as time-format]
-            [clj-time.coerce :as time-coerce])
+            [clj-time.coerce :as time-coerce]
+            [clojure.core :as clj])
   (:import [java.sql Timestamp]
            [org.joda.time DateTime]))
 
@@ -14,6 +15,28 @@
                  (clojure.string/replace-first #"(:arglists )" "$1'"))]
     (load-string
      (str "(def ^" meta " " name " " fun ")"))))
+
+(defn < [ & args]
+  (reduce (fn [sofar [f s]] (and sofar (time/before? f s)))
+          true
+          (partition 2 1 args)))
+
+(defn <= [ & args]
+  (reduce (fn [sofar [f s]] (and sofar (or (time/equal? f s)
+                                           (time/before? f s))))
+          true
+          (partition 2 1 args)))
+
+(defn > [ & args]
+  (reduce (fn [sofar [f s]] (and sofar (time/after? f s)))
+          true
+          (partition 2 1 args)))
+
+(defn >= [ & args]
+  (reduce (fn [sofar [f s]] (and sofar (or (time/equal? f s)
+                                           (time/after? f s))))
+          true
+          (partition 2 1 args)))
 
 (def format-for
   (let [f (fn [format-str]

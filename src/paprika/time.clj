@@ -4,10 +4,16 @@
             [clj-time.core :as time]
             [clj-time.format :as time-format]
             [clj-time.coerce :as time-coerce])
-  (:import [java.sql Timestamp]))
+  (:import [java.sql Timestamp]
+           [org.joda.time DateTime]))
 
 (doseq [[name fun] (ns-publics 'clj-time.core)]
-  (load-string (str `(def ~name ~fun))))
+  (let [meta (-> fun meta
+                 (dissoc :file :name :ns :line :column)
+                 str
+                 (clojure.string/replace-first #"(:arglists )" "$1'"))]
+    (load-string
+     (str "(def ^" meta " " name " " fun ")"))))
 
 (def format-for
   (let [f (fn [format-str]
@@ -68,3 +74,9 @@
                      "Expected is lower than result"
                      "Expected is greater than result")]}
           {:midje/data-laden-falsehood true}))))
+
+(defmethod print-method DateTime [d ^java.io.Writer w]
+  (if (-> d .getZone .getID (= "UTC"))
+    (.write w "#time/utc ")
+    (.write w "#time/local "))
+  (.write w (str "\"" d "\"")))

@@ -55,3 +55,12 @@
           sql-time (time/to-sql time)]
       (time/from-sql {:field 10 :nested {:times [sql-time time] :other-time sql-time}})
       => {:field 10 :nested {:times [time time] :other-time time}})))
+
+(facts "when pretty-printing dates"
+  (fact "will parse UTC dates"
+    (pr-str (time/from-string "2010-10-20T10:00:00Z"))
+    => "#time/utc \"2010-10-20T10:00:00.000Z\"")
+
+  (fact "will parse TZ dates"
+    (pr-str (time/from-string-local "2010-10-20T10:00:00"))
+    => #"#time/local \"2010-10-20T10:00:00.000.*"))

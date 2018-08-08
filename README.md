@@ -40,6 +40,49 @@ To aid us on tests we're creating some helper reader macros:
   local-time => (time/same-as? local-sql-timestamp))
 ```
 
+Also, there are comparators for time functions:
+
+```clojure
+(def yesterday (-> 1 time/days time/ago))
+(def tomorrow (-> 1 time/days time/from-now))
+(time/<= yesterday yesterday tomorrow) ; => true
+```
+
+### Schema functions
+
+There are some helper functions for Prismatic Schema too.
+
+First, there are some common schemas that we probably want to use on a daily basis:
+
+* `NonEmptyStr` - simply a string that dissalows `""`
+* `PositiveInt` - an integer that can't be 0 or negative
+* `(digits-string n)` - simply a string composed only by digits, that **needs to have** `n` digits, exactly.
+* `Time` - accepts a Joda DateTime object
+* `Date` - accepts a Joda DateTime object, but coercer will accept only `yyyy-MM-dd` format
+
+Also, it adds some coercers: first, it'll add a dynamic var `*coercions*` that allows anybody to extend the already existing coercions by hand, if needed. By default, it have coercions for DateTime (in ISO format), Date (in `yyyy-MM-dd` format, will transform it to a Joda DateTime at midnight at UTC timezone), and a coercer for BigDecimal (will transform a string to bigdecimal). There are two principal coercers: strict and non-strict.
+
+```clojure
+(require '[paprika.schemas :as schemas])
+
+(def SomeFormat {:name schemas/NonEmptyStr
+                 :salary java.math.BigDecimal
+                 :birth schemas/Date})
+
+(def strict (schemas/strict-coercer-for SomeFormat))
+(strict {:name "Foo" :salary "19000.90" :birth "1912-10-01"})
+; => {:name "Foo", :birth "1912-10-01T00:00:00.000Z", :salary 19000.9}
+
+(strict {:name "Foo" :salary "19000.90" :birth "1912-10-01" :unknown "attribute"})
+; => Exception
+
+(def non-strict (schemas/coercer-for SomeFormat))
+(non-strict {:name "Foo" :salary "19000.90" :birth "1912-10-01" :unknown "attribute"})
+; => {:name "Foo", :birth "1912-10-01T00:00:00.000Z", :salary 19000.9}
+```
+
+So, strict coercers will disallow unknown keys, non-strict will silently remove then
+
 ## License
 
 MIT License

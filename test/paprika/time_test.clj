@@ -62,5 +62,7 @@
     => "#time/utc \"2010-10-20T10:00:00.000Z\"")
 
   (fact "will parse TZ dates"
-    (pr-str (time/from-string-local "2010-10-20T10:00:00"))
-    => #"#time/local \"2010-10-20T10:00:00.000.*"))
+    (-> "2010-10-21T10:00:00+03:00" time/from-string
+        (time/to-time-zone (time/time-zone-for-id "America/Sao_Paulo"))
+        pr-str)
+    => #"#time/local \"2010-10-2.*"))

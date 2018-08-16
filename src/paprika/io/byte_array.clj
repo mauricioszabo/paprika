@@ -3,17 +3,16 @@
   (:require [clojure.java.io :as io])
   (:import [java.io ByteArrayOutputStream ByteArrayInputStream]))
 
-(defn slurp [file-name]
+(defn slurp
+  "Reads a binary file and returns a byte array instead of a string"
+  [file-name]
   (let [in (io/input-stream file-name)
         out (ByteArrayOutputStream.)]
     (io/copy in out)
     (.toByteArray out)))
 
-(defn spit [file-name contents]
+(defn spit
+  "Saves a binary data (byte array) to a file"
+  [file-name contents]
   (io/copy (ByteArrayInputStream. contents)
            (io/file file-name)))
-
-(defn stream-for [byte-array]
-  (if (string? byte-array)
-    (stream-for (slurp byte-array))
-    (ByteArrayInputStream. byte-array)))

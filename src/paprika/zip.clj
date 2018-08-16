@@ -45,21 +45,3 @@
                                  :contents (delay (String. bin))}
                                 (aux))))))]
     (next-entry)))
-
-(defn from-stream [stream]
-  (let [zip (ZipInputStream. stream)
-        next (fn next [] (some-> zip .getNextEntry (cons (next)) lazy-seq))
-        ba (fn [size] (let [ba (byte-array size)]
-                        (.closeEntry zip)
-                        (prn [:SIZE size])
-                        (prn [:SIZE-READ (.read zip ba 0 size)])
-                        ba))]
-    (for [entry (next)
-          :let [size (.getSize entry)
-                bytearray (ba size)]]
-      {:entry entry
-       :name (.getName entry)
-       :directory? (.isDirectory entry)
-       :binary bytearray
-       :contents (delay (String. bytearray))
-       :size size})))

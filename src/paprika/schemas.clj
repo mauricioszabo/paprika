@@ -26,7 +26,7 @@
 (def Time (gen-time-schema 'a-joda-DateTime))
 (def Date (gen-time-schema 'a-joda-Date))
 
-(defn- parse-date [str] (time/parse str "yyyy-MM-dd"))
+(defn- parse-date [string] (time/from-string (str string "T00:00:00Z")))
 
 (defn- safe-date [f]
   (fn [obj]

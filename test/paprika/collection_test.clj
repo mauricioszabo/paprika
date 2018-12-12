@@ -16,3 +16,7 @@
 (fact "update only if not nil"
   (coll/update-in-when {} [:foo :bar] (constantly nil)) => {}
   (coll/update-in-when {} [:foo :baz] (constantly 10)) => {:foo {:baz 10}})
+
+(fact "indexes collection"
+  (coll/index-by :id [{:id 1 :name "Foo"} {:id 2 :name "Bar"}])
+  => {1 {:id 1 :name "Foo"}, 2 {:id 2 :name "Bar"}})

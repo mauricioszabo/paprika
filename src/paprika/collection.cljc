@@ -19,7 +19,7 @@
       map
       (assoc-in map path new-val))))
 
-(defn index-by 
+(defn index-by
   "Exactly the same as clojure.core/group-by, except it returns a single
    element. If there are more than one element that matches the function,
    the ending indexed element is undefined"

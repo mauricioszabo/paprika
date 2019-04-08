@@ -1,8 +1,7 @@
 (ns paprika.collection-test
-  (:require [clojure.test :refer [deftest testing is] :include-macros true]
+  (:require [clojure.test :refer [deftest testing is]]
             [paprika.collection :as coll]
             [matcher-combinators.test]))
-
 
 (def some-map {:a 10 :b 20})
 

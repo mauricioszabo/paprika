@@ -1,4 +1,4 @@
-(defproject paprika "0.1.1"
+(defproject paprika "0.1.2"
   :description "Simple utility functions"
   :url "http://github.com/mauricioszabo/paprika"
   :license {:name "MIT"}

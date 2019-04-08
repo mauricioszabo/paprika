@@ -2,12 +2,10 @@
 {:source-paths ["src" "test"]
 
  :dependencies [[com.andrewmcveigh/cljs-time "0.5.2"]
-                [prismatic/schema "1.1.7"]
-                [nubank/matcher-combinators "0.8.2"]]
+                [prismatic/schema "1.1.10"]
+                [org.clojure/math.combinatorics "0.1.5"]
+                [nubank/matcher-combinators "0.8.3"]]
 
  :builds {:tests {:target :node-test
                   :output-to "out/all-tests.js"
-                  :autorun true}
-          :dev {:target :node-script
-                :main paprika.collection-test/main
-                :output-to "out/script.js"}}}
+                  :autorun true}}}

@@ -1,7 +1,7 @@
 (ns paprika.schemas
   (:require [schema.core :as s]
             [schema.coerce :as coerce]
-            #?(:clj [paprika.schemas.coerce :as schema-coercers])
+            [paprika.schemas.coerce :as schema-coercers]
             #?(:clj [paprika.time :as time])))
 
 (defn- positive?
@@ -38,16 +38,14 @@
       ((coerce/safe f) obj)
       obj)))
 
-#?(:clj
-   (def ^:dynamic *coercions* (merge coerce/+json-coercions+
-                                     {Time (safe-date time/from-string)
-                                      Date (safe-date parse-date)
-                                      java.math.BigDecimal (coerce/safe bigdec)})))
+(def ^:dynamic *coercions*
+  (merge coerce/+json-coercions+
+         #?(:clj {Time (safe-date time/from-string)
+                  Date (safe-date parse-date)
+                  java.math.BigDecimal (coerce/safe bigdec)})))
 
-#?(:clj
-   (defn coercer-for [schema]
-     (coerce/coercer! schema (schema-coercers/loose-coercer *coercions*))))
+(defn coercer-for [schema]
+  (coerce/coercer! schema (schema-coercers/loose-coercer *coercions*)))
 
-#?(:clj
-   (defn strict-coercer-for [schema]
-     (coerce/coercer! schema (schema-coercers/strict-coercer *coercions*))))
+(defn strict-coercer-for [schema]
+  (coerce/coercer! schema (schema-coercers/strict-coercer *coercions*)))

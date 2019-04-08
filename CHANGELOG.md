@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.1.2
+- ClojureScript support for collections, schemas, and string additions
+- Tests for coercer
+
 ## 0.1.1
 - Simple ZIP file reading support
 - Some simple helpers for Java's byte arrays

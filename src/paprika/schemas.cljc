@@ -44,8 +44,21 @@
                   Date (safe-date parse-date)
                   java.math.BigDecimal (coerce/safe bigdec)})))
 
-(defn coercer-for [schema]
-  (coerce/coercer! schema (schema-coercers/loose-coercer *coercions*)))
+(defn coercer-for
+  "Defines a coercer for any schema that'll remove additional keys.
 
-(defn strict-coercer-for [schema]
-  (coerce/coercer! schema (schema-coercers/strict-coercer *coercions*)))
+(def coerce (coercer/for <schema> [<possible-coercions>]))
+(coerce {:some 1 :bar 20 :additional 1}) => {:some 1 :bar 20}"
+  ([schema] (coercer-for schema *coercions*))
+  ([schema coercions]
+   (coerce/coercer! schema (schema-coercers/loose-coercer *coercions*))))
+
+(defn strict-coercer-for
+  "Defines a coercer for any schema that won't remove additional keys.
+
+(def coerce (coercer/for <schema> [<possible-coercions>]))
+(coerce {:some 1 :bar 20 :additional 1}) => CRASH
+(coerce {:some 1 :bar 20}) => {:some 1 :bar 20}"
+  ([schema] (strict-coercer-for schema *coercions*))
+  ([schema coercions]
+   (coerce/coercer! schema (schema-coercers/strict-coercer *coercions*))))

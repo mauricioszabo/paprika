@@ -1,8 +1,7 @@
 (ns paprika.schemas.coerce
   (:require [schema.core :as s]
             [schema.coerce :as coerce]
-            [schema.utils :as utils]
-            [paprika.collection :as coll]))
+            [schema.utils :as utils]))
 
 ; Functions got from here: https://gist.github.com/abp/0c4106eba7b72802347b
 ; following this thread: https://groups.google.com/forum/#!topic/prismatic-plumbing/SaOBraHzoHE
@@ -30,11 +29,6 @@
           (if (map? x)
             (filter-schema-keys x explicit-keys extra-keys-walker)
             x))))))
-
-(defn- gen-min-digits-spec [min-digits]
-  (s/constrained s/Str
-                 #(-> % count (>= min-digits) (and (re-matches #"\d+" %)))
-                 (symbol (str "string-with-at-least" min-digits "-digits"))))
 
 (defn strict-coercer [coercions]
   (fn [schema]

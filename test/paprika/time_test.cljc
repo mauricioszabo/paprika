@@ -11,17 +11,17 @@
 (deftest comparing-dates
   (testing "will compare if it's less than another date"
     (is (time/< yesterday (time/now) tomorrow))
-    (is (time/<= yesterday yesterday tomorrow))))
+    (is (time/<= yesterday yesterday tomorrow)))
 
-;   (testing "will compare if it's greater than another date"
-;     (is (time/> tomorrow (time/now) yesterday))
-;     (is (time/>= tomorrow yesterday yesterday))))
-;
-; (deftest converting-times
-;   (testing "will convert times"
-;     (is (= (time/from-string "1982-10-12T08:20:30")
-;            (time/parse "12/10/1982 08:20:30" "dd/MM/yyyy hh:mm:ss"))))
-;
+  (testing "will compare if it's greater than another date"
+    (is (time/> tomorrow (time/now) yesterday))
+    (is (time/>= tomorrow yesterday yesterday))))
+
+(deftest converting-times
+  (testing "will convert times"
+    (is (= (time/from-string "1982-10-12T08:20:30")
+           (time/parse "12/10/1982 08:20:30" "dd/MM/yyyy hh:mm:ss")))))
+
 ;   (testing "will convert to local time"
 ;     (is (= (time/from-string-local "1982-10-12T10:20:30")
 ;            (time/parse-local "12/10/1982 10:20:30" "dd/MM/yyyy hh:mm:ss"))))

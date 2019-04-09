@@ -81,7 +81,7 @@
 (def time-now #'time/time-now)
 (def time-zone-for-offset #'time/time-zone-for-offset)
 (def to-default-time-zone #'time/to-default-time-zone)
-(def to-utc-time-zone #'time/to-utc-time-zone)
+(def to-utc #'time/to-utc-time-zone)
 (def today #'time/today)
 (def today-at #'time/today-at)
 (def today-at-midnight #'time/today-at-midnight)
@@ -131,22 +131,21 @@
 #?(:clj
    (defn to-utc [date]
      (time/to-time-zone date time/utc)))
-#?(:clj
-   (defn as-utc [date]
-     (time/from-time-zone date time/utc)))
+#?(:clj)
+(defn as-utc [date]
+  (time/from-time-zone date time/utc))
 
 (defn parse-local [string format]
   (time-format/parse (format-for format) string))
 
-#?(:clj
-   (defn parse [string format]
-     (-> string (parse-local format) as-utc)))
+#?(:clj)
+(defn parse [string format]
+  (-> string (parse-local format) as-utc))
 
-#?(:clj
-   (defn unparse [date format]
-     (->> date
-          to-utc
-          (time-format/unparse (format-for format)))))
+(defn unparse [date format]
+  (->> date
+       to-utc
+       (time-format/unparse (format-for format))))
 
 #?(:clj
    (defn unparse-local [date format]

@@ -17,15 +17,28 @@
     (is (time/> tomorrow (time/now) yesterday))
     (is (time/>= tomorrow yesterday yesterday))))
 
+(println (.toUsTimeString (time/from-string-local "1982-10-12T08:20:30")))
+(println (.toUsTimeString (time/from-string "1982-10-12T08:20:30")))
+(println (.toUsTimeString (time/parse "12/10/1982 08:20:30" "dd/MM/yyyy HH:mm:ss")))
+(println (.toUsTimeString (time/parse-local "12/10/1982 08:20:30" "dd/MM/yyyy HH:mm:ss")))
+(-> (time/from-string "1982-10-12T08:20:30")
+    time/to-local
+    .toUsTimeString
+    println)
+
+(prn
+ (:offset
+  (time/default-time-zone)))
+
 (deftest converting-times
   (testing "will convert times"
-    (is (= (time/from-string "1982-10-12T08:20:30")
-           (time/parse "12/10/1982 08:20:30" "dd/MM/yyyy hh:mm:ss")))))
+    (is (time/= (time/from-string "1982-10-12T08:20:30")
+                (time/parse "12/10/1982 08:20:30" "dd/MM/yyyy HH:mm:ss"))))
 
-;   (testing "will convert to local time"
-;     (is (= (time/from-string-local "1982-10-12T10:20:30")
-;            (time/parse-local "12/10/1982 10:20:30" "dd/MM/yyyy hh:mm:ss"))))
-;
+  (testing "will convert to local time"
+    (is (time/= (time/from-string-local "1982-10-12T10:20:30")
+                (time/parse-local "12/10/1982 10:20:30" "dd/MM/yyyy HH:mm:ss")))))
+
 ;   (testing "will interpret times as local"
 ;     (is (= (time/from-string-local "1982-10-12T10:20:30")
 ;           (-> "1982-10-12T10:20:30" time/from-string time/as-local))))

@@ -3,6 +3,8 @@
 ## 0.1.2
 - ClojureScript support for collections, schemas, and string additions
 - Tests for coercer
+- ClojureScript support for date
+- Fixed parsing of dates bug: https://github.com/mauricioszabo/paprika/issues/5
 
 ## 0.1.1
 - Simple ZIP file reading support

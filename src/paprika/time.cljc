@@ -16,15 +16,6 @@
      (:import [java.sql Timestamp]
               [org.joda.time DateTime])))
 
-#?(:clj
-   (doseq [[name fun] (ns-publics 'clj-time.core)]
-     (let [meta (-> fun meta
-                    (dissoc :file :name :ns :line :column)
-                    str
-                    (clojure.string/replace-first #"(:arglists )" "$1'"))]
-       (load-string
-        (str "(def ^" meta " " name " " fun ")")))))
-
 (def ago #'time/ago)
 (def date-midnight #'time/date-midnight)
 (def date-time #'time/date-time)
@@ -93,7 +84,25 @@
      (def periods #'time/periods)
      (def static-ms-fn #'time/static-ms-fn)
      (def to-default-time-zone #'time/to-default-time-zone)
-     (def to-utc #'time/to-utc-time-zone)))
+     (def to-utc #'time/to-utc-time-zone)
+     (def minute time/minute)
+     (def hour time/hour)
+     (def day time/day)
+     (def second time/second)
+     (def day-of-week time/day-of-week)
+     (def month time/month)
+     (def year time/year)
+     (def week-number-of-year time/week-number-of-year)
+     (def sec time/sec)
+     (def milli time/milli))
+   :clj
+   (doseq [[name fun] (ns-publics 'clj-time.core)]
+     (let [meta (-> fun meta
+                    (dissoc :file :name :ns :line :column)
+                    str
+                    (clojure.string/replace-first #"(:arglists )" "$1'"))]
+       (load-string
+        (str "(def ^" meta " " name " " fun ")")))))
 
 (defn = [ & args]
   (reduce (fn [sofar [f s]] (and sofar
@@ -153,18 +162,24 @@
      (time/from-utc-time-zone date)))
 
 (defn parse-local [string format]
-  (time-format/parse (format-for format) string))
+  #?(:clj
+     (.toDateTime (time-format/parse-local (format-for format) string))
+     :cljs
+      (-> format
+          format-for
+          (time-format/parse-local string))))
 
-#?(:clj)
 (defn parse [string format]
-  (-> string (parse-local format) as-utc))
+  #?(:clj
+     (->> string (time-format/parse (format-for format)) as-utc)
+     :cljs
+     (time-format/parse (format-for format) string)))
 
 (defn unparse [date format]
   (->> date
        to-utc
        (time-format/unparse (format-for format))))
 
-#?(:clj)
 (defn unparse-local [date format]
   (->> date
        to-local
@@ -173,24 +188,24 @@
 (def from-string #'time-coerce/from-string)
 (defn from-string-macro [str] `(from-string ~str))
 
-#?(:clj)
 (defn from-string-local [string] (-> string from-string as-local))
-:cljs
-#?(:clj
-   (defn from-string-local-macro [str] `(from-string-local ~str)))
 
-; (def to-sql time-coerce/to-sql-time)
-; (defn from-sql [time]
-;   (cond
-;     (coll? time) (walk/postwalk #(cond-> % (instance? Timestamp %) from-sql) time)
-;     (instance? java.sql.Timestamp time) (time-coerce/from-sql-time time)
-;     :java.sql.Date (time-coerce/from-sql-date time)))
-;
-; (defn from-timestamp-macro [string]
-;   `(-> ~string from-string to-sql))
-; (defn from-timestamp-local-macro [string]
-;   `(-> ~string from-string-local to-sql))
-;
+#?(:clj
+   (do
+     (defn from-string-local-macro [str] `(from-string-local ~str))
+
+     (def to-sql time-coerce/to-sql-time)
+     (defn from-sql [time]
+       (cond
+         (coll? time) (walk/postwalk #(cond-> % (instance? Timestamp %) from-sql) time)
+         (instance? java.sql.Timestamp time) (time-coerce/from-sql-time time)
+         :java.sql.Date (time-coerce/from-sql-date time)))
+
+     (defn from-timestamp-macro [string]
+       `(-> ~string from-string to-sql))
+     (defn from-timestamp-local-macro [string]
+       `(-> ~string from-string-local to-sql))))
+
 ; ;; Test helper
 ; (defn same-as? [other-time]
 ;   (fn [time]
@@ -200,9 +215,22 @@
 ;                      "Expected is lower than result"
 ;                      "Expected is greater than result")]}
 ;           {:midje/data-laden-falsehood true}))))
-;
-; (defmethod print-method DateTime [d ^java.io.Writer w]
-;   (if (-> d .getZone .getID (= "UTC"))
-;     (.write w "#time/utc ")
-;     (.write w "#time/local "))
-;   (.write w (str "\"" d "\"")))
+
+#?(:cljs (def ^private DateTime (.. js/goog -date -DateTime)))
+#?(:clj
+   (defmethod print-method DateTime [d ^java.io.Writer w]
+     (if (-> d .getZone .getID (clj/= "UTC"))
+       (.write w "#time/utc ")
+       (.write w "#time/local "))
+     (.write w (str "\"" d "\"")))
+
+   :cljs
+   (extend-protocol IPrintWithWriter
+     DateTime
+     (-pr-writer [d writer _]
+       (let [dt-str (str d)
+             norm (.replace dt-str
+                            #"(\d{4})(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)"
+                            "$1-$2-$3T$4:$5:$6")
+             mil (->> d milli (str "00") (take-last 3) (apply str))]
+         (-write writer (str "#time/utc \"" norm "." mil "Z\""))))))

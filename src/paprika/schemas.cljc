@@ -38,6 +38,8 @@
       ((coerce/safe f) obj)
       obj)))
 
+((safe-date time/from-string) "1982-12-10T10:20:30Z")
+
 (def ^:dynamic *coercions*
   (merge coerce/+json-coercions+
          #?(:clj {Time (safe-date time/from-string)
@@ -51,7 +53,7 @@
 (coerce {:some 1 :bar 20 :additional 1}) => {:some 1 :bar 20}"
   ([schema] (coercer-for schema *coercions*))
   ([schema coercions]
-   (coerce/coercer! schema (schema-coercers/loose-coercer *coercions*))))
+   (coerce/coercer! schema (schema-coercers/loose-coercer oercions))))
 
 (defn strict-coercer-for
   "Defines a coercer for any schema that won't remove additional keys.
@@ -61,4 +63,4 @@
 (coerce {:some 1 :bar 20}) => {:some 1 :bar 20}"
   ([schema] (strict-coercer-for schema *coercions*))
   ([schema coercions]
-   (coerce/coercer! schema (schema-coercers/strict-coercer *coercions*))))
+   (coerce/coercer! schema (schema-coercers/strict-coercer coercions))))

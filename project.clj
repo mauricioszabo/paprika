@@ -4,6 +4,7 @@
   :license {:name "MIT"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [clj-time "0.13.0"]
+                 [com.andrewmcveigh/cljs-time "0.5.2"]
                  [prismatic/schema "1.1.10"]]
 
   :profiles {:dev {:src-paths ["dev"]

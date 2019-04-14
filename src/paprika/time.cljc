@@ -216,7 +216,10 @@
 ;                      "Expected is greater than result")]}
 ;           {:midje/data-laden-falsehood true}))))
 
-#?(:cljs (def ^private DateTime (.. js/goog -date -DateTime)))
+(def Time
+  #?(:clj org.joda.time.DateTime
+     :cljs (.. js/goog -date -DateTime)))
+
 #?(:clj
    (defmethod print-method DateTime [d ^java.io.Writer w]
      (if (-> d .getZone .getID (clj/= "UTC"))
@@ -226,7 +229,7 @@
 
    :cljs
    (extend-protocol IPrintWithWriter
-     DateTime
+     Time
      (-pr-writer [d writer _]
        (let [dt-str (str d)
              norm (.replace dt-str

@@ -53,7 +53,7 @@
 (coerce {:some 1 :bar 20 :additional 1}) => {:some 1 :bar 20}"
   ([schema] (coercer-for schema *coercions*))
   ([schema coercions]
-   (coerce/coercer! schema (schema-coercers/loose-coercer oercions))))
+   (coerce/coercer! schema (schema-coercers/loose-coercer coercions))))
 
 (defn strict-coercer-for
   "Defines a coercer for any schema that won't remove additional keys.

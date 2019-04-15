@@ -165,9 +165,9 @@
   #?(:clj
      (.toDateTime (time-format/parse-local (format-for format) string))
      :cljs
-      (-> format
-          format-for
-          (time-format/parse-local string))))
+     (-> format
+         format-for
+         (time-format/parse-local string))))
 
 (defn parse [string format]
   #?(:clj

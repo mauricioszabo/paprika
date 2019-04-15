@@ -18,10 +18,9 @@
                :bar schemas/NonEmptyStr})
 (def coerce! (schemas/coercer-for SchemaEx))
 (def strict! (schemas/strict-coercer-for SchemaEx))
+(def time-coerce! (schemas/coercer-for {:time schemas/Time}))
+(def dt-coerce! (schemas/coercer-for {:date schemas/Date}))
 
-; (prn :FOO (dt-coerce! {:time "1982-12-10T10:20:30Z"}))
-
-(def dt-coerce! (schemas/coercer-for {:time schemas/Date}))
 (deftest coercers
   (testing "removes additional keys"
     (is (match? (m/equals {:foo "123" :bar "Lol"})
@@ -34,4 +33,8 @@
 
   (testing "coerces string to datetime"
     (is (time/= (time/date-time 1982 12 10 10 20 30)
-                (:time (dt-coerce! {:time "1982-12-10T10:20:30Z"}))))))
+                (:time (time-coerce! {:time "1982-12-10T10:20:30Z"})))))
+
+  (testing "coerces string to datetime"
+    (is (time/= (time/date-time 1982 12 10 0 0 0)
+                (:date (dt-coerce! {:date "1982-12-10"}))))))

@@ -17,7 +17,7 @@
              m))
 
 (defn map-filter-matcher [s]
-  (when (map? s)
+  (when (and (not (record? s)) (map? s))
     (let [extra-keys-schema (s/find-extra-keys-schema s)
           extra-keys-walker (when extra-keys-schema (s/checker extra-keys-schema))
           explicit-keys (some->> (dissoc s extra-keys-schema)

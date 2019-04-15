@@ -41,3 +41,11 @@
       (. prom then (fn [res]
                      (is (= res 30))
                      (done))))))
+
+(deftest async-await
+  (a/testing "let can await for promises" done
+    (p/let [v 10
+            p <- (. js/Promise resolve 1)]
+      (is (= 10 v))
+      (is (= 1 p))
+      (done))))

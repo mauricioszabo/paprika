@@ -47,10 +47,3 @@
 
 (defn strict-coercer-for [schema]
   (coerce/coercer! schema (schema-coercers/strict-coercer *coercions*)))
-
-(def coerce! (coercer-for {:foo Date}))
-(def coerce2! (coercer-for {:foo s/Keyword}))
-#_
-(coerce! {:foo "2019-10-20"})
-#_
-(coerce2! {:foo "bar"})

@@ -21,7 +21,7 @@
                  (symbol (str "string-with-" num-digits "-digits"))))
 
 (defn- gen-time-schema [msg-symbol]
-  (s/pred #(instance? org.joda.time.DateTime %) msg-symbol))
+  (s/pred #(instance? time/Time %) msg-symbol))
 
 (def Time (gen-time-schema 'a-joda-DateTime))
 (def Date (gen-time-schema 'a-joda-Date))
@@ -34,10 +34,13 @@
       ((coerce/safe f) obj)
       obj)))
 
-(def ^:dynamic *coercions* (merge coerce/+json-coercions+
-                                  {Time (safe-date time/from-string)
-                                   Date (safe-date parse-date)
-                                   java.math.BigDecimal (coerce/safe bigdec)}))
+(def ^:dynamic *coercions*
+  (merge coerce/+json-coercions+
+         #?(:clj {Time (safe-date time/from-string)
+                  Date (safe-date parse-date)
+                  java.math.BigDecimal (coerce/safe bigdec)}
+            :cljs {Time (safe-date time/from-string)
+                   Date (safe-date parse-date)})))
 
 (defn coercer-for [schema]
   (coerce/coercer! schema (schema-coercers/loose-coercer *coercions*)))

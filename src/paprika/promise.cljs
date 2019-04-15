@@ -14,3 +14,14 @@
   [fun p1 & promises]
   (.then (all (cons p1 promises))
          #(apply fun %)))
+
+(defn intercept
+  "Same as clojure.core/map, but keeps the old result of promises. Used primarily
+for side-effects functions that depends on promises' results"
+  [fun p1 & promises]
+  (if (empty? promises)
+    (.then p1 (fn [res] (fun res) res))
+    (.then (all (cons p1 promises))
+           (fn [results]
+             (apply fun results)
+             results))))

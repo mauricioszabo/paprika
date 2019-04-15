@@ -24,6 +24,17 @@
                (done))
              p1 p3))))
 
+(deftest wait-and-go
+  (a/testing "awaits the promise results, but propagates old" done
+    (let [p1 (. js/Promise resolve 1)
+          p2 (. js/Promise resolve 2)
+          p3 (p/intercept inc p2)]
+      (p/intercept (fn [r1 r2]
+                     (is (= 1 r1))
+                     (is (= 2 r2))
+                     (done))
+                   p1 p3))))
+
 (deftest async-lets
   (a/testing "wraps let in a promise" done
     (let [prom (p/let [foo 10 bar 20] (+ foo bar))]

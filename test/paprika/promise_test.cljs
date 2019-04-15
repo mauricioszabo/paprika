@@ -13,6 +13,17 @@
         (is (match? [1 2] res))
         (done)))))
 
+(deftest mapping-promises
+  (a/testing "use of map to compose promises" done
+    (let [p1 (. js/Promise resolve 1)
+          p2 (. js/Promise resolve 2)
+          p3 (p/map inc p2)]
+      (p/map (fn [r1 r2]
+               (is (= 1 r1))
+               (is (= 3 r2))
+               (done))
+             p1 p3))))
+
 (deftest async-lets
   (a/testing "wraps let in a promise" done
     (let [prom (p/let [foo 10 bar 20] (+ foo bar))]

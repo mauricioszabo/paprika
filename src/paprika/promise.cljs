@@ -20,7 +20,7 @@
 for side-effects functions that depends on promises' results"
   [fun p1 & promises]
   (if (empty? promises)
-    (.then p1 (fn [res] (fun res) res))
+    (.then ^js p1 (fn [res] (fun res) res))
     (.then (all (cons p1 promises))
            (fn [results]
              (apply fun results)

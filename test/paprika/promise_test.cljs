@@ -49,3 +49,28 @@
       (is (= 10 v))
       (is (= 1 p))
       (done))))
+
+(prn (macroexpand-1
+      '(p/let [p1 <- (js/Promise. (fn [res] (swap! a conj 1) (res 1)))
+               p2 <- (js/Promise. (fn [res] (swap! a conj 2) (res 2)))
+               p3 <-- (js/Promise. (fn [res] (swap! a conj 3) (res 3)))
+               p4 <-- (js/Promise. (fn [res] (swap! a conj 4) (res 4)))]
+        (is (= p1 1))
+        (is (= p2 2))
+        (is (= p3 3))
+        (is (= p4 4))
+        (is (= [1 3 2 4] @a)))))
+
+(deftest multi-async-await
+  (a/testing "lets user control what runs in paralel when awaiting" done
+    (let [a (atom [])]
+      (p/let [p1 <- (js/Promise. (fn [res] (swap! a conj 1) (res 1)))
+              p2 <- (js/Promise. (fn [res] (swap! a conj 2) (res 2)))
+              p3 <-- (js/Promise. (fn [res] (swap! a conj 3) (res 3)))
+              p4 <-- (js/Promise. (fn [res] (swap! a conj 4) (res 4)))]
+        (is (= p1 1))
+        (is (= p2 2))
+        (is (= p3 3))
+        (is (= p4 4))
+        (is (= [1 3 2 4] @a))
+        (done)))))

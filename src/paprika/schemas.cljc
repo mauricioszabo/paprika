@@ -42,8 +42,12 @@
             :cljs {Time (safe-date time/from-string)
                    Date (safe-date parse-date)})))
 
-(defn coercer-for [schema]
-  (coerce/coercer! schema (schema-coercers/loose-coercer *coercions*)))
+(defn coercer-for
+  ([schema] (coercer-for schema *coercions*))
+  ([schema coercions]
+   (coerce/coercer! schema (schema-coercers/loose-coercer coercions))))
 
-(defn strict-coercer-for [schema]
-  (coerce/coercer! schema (schema-coercers/strict-coercer *coercions*)))
+(defn strict-coercer-for
+  ([schema] (strict-coercer-for schema *coercions*))
+  ([schema coercions]
+   (coerce/coercer! schema (schema-coercers/strict-coercer coercions))))

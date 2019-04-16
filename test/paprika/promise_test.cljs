@@ -36,20 +36,29 @@
                    p1 p3))))
 
 (deftest async-lets
-  (a/testing "wraps let in a promise" done
-    (let [prom (p/let [foo 10 bar 20] (+ foo bar))]
-      (. prom then (fn [res]
-                     (is (= res 30))
-                     (done))))))
+  (testing "works like a regular `let`"
+    (let [res (p/let [foo 10 bar 20] (+ foo bar))]
+      (is (= 30 res)))))
 
 (deftest async-await
   (a/testing "let can await for promises" done
     (p/let [v 10
-            p <- (. js/Promise resolve 1)]
+            p <- (. js/Promise resolve 1)
+            p2 (+ p 10)]
       (is (= 10 v))
       (is (= 1 p))
+      (is (= 11 p2))
       (done))))
 
+; (prn (macroexpand-1 '
+;       (p/let [v 10
+;               p <- (. js/Promise resolve 1)
+;               p2 <- (+ p 10)]
+;              (is (= 10 v))
+;              (is (= 1 p))
+;              (is (= 11 p2))
+;              (done))))
+; #_
 (prn (macroexpand-1
       '(p/let [p1 <- (js/Promise. (fn [res] (swap! a conj 1) (res 1)))
                p2 <- (js/Promise. (fn [res] (swap! a conj 2) (res 2)))

@@ -1,7 +1,7 @@
 language: clojure
 
 jdk:
-  - oraclejdk8
+  - openjdk:11.0.5
 
 script:
   - lein test

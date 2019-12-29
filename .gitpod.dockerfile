@@ -7,3 +7,4 @@ RUN lein
 
 USER gitpod
 ENV JAVA_HOME=/usr/local/openjdk-11
+ENV PATH=/usr/local/openjdk-11/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/bin/

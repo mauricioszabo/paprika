@@ -11,3 +11,4 @@ RUN rm node* -R
 
 USER gitpod
 ENV JAVA_HOME=/usr/local/openjdk-11
+ENV JVM_OPTS='-Dclojure.server.myrepl={:port,5555,:accept,clojure.core.server/repl}'

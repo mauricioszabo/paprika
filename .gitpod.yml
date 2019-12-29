@@ -1,4 +1,5 @@
-# image: clojure:openjdk-11-lein-slim-buster
+image:
+  file: .gitpod.dockerfile
 tasks:
   - init: lein deps
     command: lein run

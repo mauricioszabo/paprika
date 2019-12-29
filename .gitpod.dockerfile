@@ -5,4 +5,5 @@ FROM clojure:openjdk-11-lein-slim-buster
 #RUN chmod +x /usr/local/bin/lein
 RUN lein
 
-#USER gitpod
+USER gitpod
+ENV JAVA_HOME=/usr/local/openjdk-11

@@ -1,0 +1,8 @@
+image: clojure:openjdk-11-lein-slim-buster
+tasks:
+  - init: lein deps
+    command: lein run
+
+vscode:
+  extensions:
+    - mauricioszabo.clover@0.0.4:MHmP3EBKs6lGCDNEAeixVg==

@@ -4,5 +4,4 @@ USER root
 RUN ln -s /usr/local/openjdk-11/bin/java /usr/local/bin/
 
 USER gitpod
-RUN lein
 ENV JAVA_HOME=/usr/local/openjdk-11

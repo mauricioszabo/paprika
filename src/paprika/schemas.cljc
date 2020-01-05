@@ -54,7 +54,7 @@
   ([schema coercions]
    (coerce/coercer! schema (schema-coercers/strict-coercer coercions))))
 
-(declare fn-s)
+#?(:clj (declare fn-s))
 (defn- norm-body [body args]
   (let [fn-args (filter (fn [[_ schema]] (and (list? schema)
                                               (-> schema first (= 'schema.core/=>))))
@@ -71,32 +71,37 @@
       body
       `((let [~@(mapcat identity lets)] ~@body)))))
 
-(defn- normalize-rest-of-fn [args body]
-  (let [norm-schema #(if (= '=> %) `s/=> %)
-        norm-args (map (fn [a] [(with-meta a nil)
-                                (->> a meta :schema (walk/prewalk norm-schema))])
-                      args)]
-    (if (s/fn-validation?)
-      (cons (->> norm-args (mapcat #(interpose ':- %)) vec)
-            (norm-body body norm-args))
-      (cons (->> norm-args (mapcat #(interpose ':- %)) vec)
-            body))))
+#?(:clj
+   (defn- normalize-rest-of-fn [args body env]
+     (let [cljs? (:ns env)
+           norm-schema #(if (= '=> %) `s/=> %)
+           norm-args (map (fn [a] [(with-meta a nil)
+                                   (->> a meta :schema (walk/prewalk norm-schema))])
+                         args)
+           final-args (->> norm-args (mapcat #(interpose ':- %)) vec)]
+       (cond
+         cljs? `(~final-args (if (s/fn-validation?)
+                               (do ~@(norm-body body norm-args))
+                               (do ~@body)))
+         (s/fn-validation?) (cons final-args (norm-body body norm-args))
+         :else (cons final-args body)))))
 
-(defn- separate-body-schema [possible-body env]
-  (if (-> possible-body first (= ':-))
-      [(nth possible-body 1)
-       (m/process-arrow-schematized-args env (nth possible-body 2))
-       (drop 2 possible-body)]
-      [`s/Any
-       (->> possible-body first (m/process-arrow-schematized-args env))
-       (rest possible-body)]))
+#?(:clj
+   (defn- separate-body-schema [possible-body env]
+     (if (-> possible-body first (= ':-))
+       [(nth possible-body 1)
+        (m/process-arrow-schematized-args env (nth possible-body 2))
+        (drop 2 possible-body)]
+       [`s/Any
+        (->> possible-body first (m/process-arrow-schematized-args env))
+        (rest possible-body)])))
 
 (defmacro fn-s [name-or-args & body]
   (if (symbol? name-or-args)
     (let [[schema args body] (separate-body-schema body &env)]
-      `(s/fn ~name-or-args ~@(normalize-rest-of-fn args body)))
+      `(s/fn ~name-or-args ~@(normalize-rest-of-fn args body &env)))
     (let [[schema args body] (separate-body-schema (cons name-or-args body) &env)]
-      `(s/fn ~@(normalize-rest-of-fn args body)))))
+      `(s/fn ~@(normalize-rest-of-fn args body &env)))))
 
 
 (defmacro defn-s [name & body]
@@ -107,9 +112,4 @@
                            [(first body) (rest body)]
                            ["" body])
         [schema args body] (separate-body-schema body &env)]
-    ; `(def ~name ~docstring (fn-s ~name ~args ~@body))
     `(s/defn ~name ~':- ~ret ~docstring ~@(normalize-rest-of-fn args body))))
-
-(defn-s lol :- s/Str
-  "SWowooo"
-  [a :- (=> s/Int s/Str)])

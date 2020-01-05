@@ -3,7 +3,7 @@
             [check.core :refer [check] :include-macros true]
             [matcher-combinators.test]
             [matcher-combinators.matchers :as m]
-            [paprika.schemas :as schemas]
+            [paprika.schemas :as schemas :include-macros true]
             [paprika.time :as time]
             [schema.core :as s]))
 

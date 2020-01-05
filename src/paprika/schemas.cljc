@@ -96,7 +96,20 @@
         (->> possible-body first (m/process-arrow-schematized-args env))
         (rest possible-body)])))
 
-(defmacro fn-s [name-or-args & body]
+(defmacro fn-s
+  "Exacly the same as prismatic schema's `fn` but accepts a schema for high order
+functions. It'll enforce the schema of the high order functions passed as parameters
+to it. It needs prismatic schemas's `schema.core/set-fn-validation!` set to true,
+and it will NOT WORK if you only use the `with-fn-validation` variant. When
+`set-fn-validation!` is false, it'll emit a normal `schema.core/fn` code.
+
+Usage:
+(paprika.schemas/fn-s [int-to-string :- (=> schema.core/Str schema.core/Int)])
+
+Please, notice that the syntax for high-order functions is exacly the same as
+prismatic schema's `schema.core/=>`, but WITHOUT the namespace part (and it will
+not accept it AT ALL)"
+  [name-or-args & body]
   (if (symbol? name-or-args)
     (let [[schema args body] (separate-body-schema body &env)]
       `(s/fn ~name-or-args ~@(normalize-rest-of-fn args body &env)))
@@ -104,7 +117,20 @@
       `(s/fn ~@(normalize-rest-of-fn args body &env)))))
 
 
-(defmacro defn-s [name & body]
+(defmacro defn-s
+  "Exacly the same as prismatic schema's `defn` but accepts a schema for high order
+functions. It'll enforce the schema of the high order functions passed as parameters
+to it. It needs prismatic schemas's `schema.core/set-fn-validation!` set to true,
+and it will NOT WORK if you only use the `with-fn-validation` variant. When
+`set-fn-validation!` is false, it'll emit a normal `schema.core/defn` code.
+
+Usage:
+(paprika.schemas/defn-s my-fn [int-to-string :- (=> schema.core/Str schema.core/Int)])
+
+Please, notice that the syntax for high-order functions is exacly the same as
+prismatic schema's `schema.core/=>`, but WITHOUT the namespace part (and it will
+not accept it AT ALL)"
+  [name & body]
   (let [[ret body] (if (-> body first (= ':-))
                      [(second body) (drop 2 body)]
                      [`s/Any body])

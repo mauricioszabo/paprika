@@ -1,8 +1,9 @@
 (ns paprika.schemas-test
   (:require [clojure.test :refer [deftest testing is]]
+            [check.core :refer [check] :include-macros true]
             [matcher-combinators.test]
             [matcher-combinators.matchers :as m]
-            [paprika.schemas :as schemas]
+            [paprika.schemas :as schemas :include-macros true]
             [paprika.time :as time]
             [schema.core :as s]))
 
@@ -38,3 +39,27 @@
   (testing "coerces string to datetime"
     (is (time/= (time/date-time 1982 12 10 0 0 0)
                 (:date (dt-coerce! {:date "1982-12-10"}))))))
+
+(s/set-fn-validation! true)
+(deftest high-order-fns
+  (testing "sanity checks"
+    (let [f (s/fn :- s/Int [a :- s/Int] (str a))]
+      (check (f 10) =throws=> #?(:clj clojure.lang.ExceptionInfo
+                                    :cljs ExceptionInfo))
+      (check (f "10") =throws=> #?(:clj clojure.lang.ExceptionInfo
+                                      :cljs ExceptionInfo))))
+
+  (testing "checks high order fn"
+    (let [f (schemas/fn-s [high :- (=> s/Str s/Int) arg]
+                        (high arg))]
+      (check (f str 10) => "10")
+      (check (f str "10") =throws=> #?(:clj clojure.lang.ExceptionInfo
+                                          :cljs ExceptionInfo))))
+
+  #_
+  (testing "checks output of high order fn"
+    (let [f (schemas/fn-s [high :- (=> s/Int s/Int) arg]
+                        (high arg))]
+      (check (f inc 10) => 11)
+      (check (f str 10) =throws=> #?(:clj clojure.lang.ExceptionInfo
+                                         :cljs ExceptionInfo)))))

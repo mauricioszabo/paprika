@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.1.3
+- Added `paprika.core/fn-s` and `defn-s`, to define prismatic schema's function that
+will honor high-order functions
+
 ## 0.1.2
 - ClojureScript support for collections, schemas, and string additions
 - Tests for coercer

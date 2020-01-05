@@ -4,7 +4,8 @@
  :dependencies [[com.andrewmcveigh/cljs-time "0.5.2"]
                 [prismatic/schema "1.1.10"]
                 [org.clojure/math.combinatorics "0.1.5"]
-                [nubank/matcher-combinators "0.8.3"]]
+                [nubank/matcher-combinators "0.8.3"]
+                [check "0.1.0-SNAPSHOT"]]
 
  :builds {:tests {:target :node-test
                   :output-to "out/all-tests.js"

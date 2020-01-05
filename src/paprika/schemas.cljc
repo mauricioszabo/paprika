@@ -138,4 +138,4 @@ not accept it AT ALL)"
                            [(first body) (rest body)]
                            ["" body])
         [schema args body] (separate-body-schema body &env)]
-    `(s/defn ~name ~':- ~ret ~docstring ~@(normalize-rest-of-fn args body))))
+    `(s/defn ~name ~':- ~ret ~docstring ~@(normalize-rest-of-fn args body &env))))

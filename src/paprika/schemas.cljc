@@ -139,3 +139,15 @@ not accept it AT ALL)"
                            ["" body])
         [schema args body] (separate-body-schema body &env)]
     `(s/defn ~name ~':- ~ret ~docstring ~@(normalize-rest-of-fn args body &env))))
+
+(defn- subschema? [data]
+  (and (map? data)
+       (every? (comp #{:doc :schema} first) data)))
+
+(defn schema-for
+  "Given a schema in the format {:key {:doc <some-doc> :schema <some-schema>}},
+generates a new schema with the expected format from Prismatic Schema"
+   [schema-with-doc]
+  (let [extract-schema (fn [data]
+                         (cond-> data (subschema? data) :schema))]
+    (walk/postwalk extract-schema schema-with-doc)))

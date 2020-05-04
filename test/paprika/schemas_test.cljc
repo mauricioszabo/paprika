@@ -73,4 +73,6 @@
   (testing "Will generate a schema definition"
     (check (schemas/schema-for example) =expect=> {:name s/Str
                                                    :age s/Int
-                                                   :more {s/Any s/Any}})))
+                                                   :more {s/Any s/Any}})
+    (check (schemas/schema-for {:names {:doc "Names of people" :schema [s/Str]}})
+           =expect=> {:names [s/Str]})))

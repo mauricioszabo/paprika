@@ -63,3 +63,14 @@
       (check (f inc 10) => 11)
       (check (f str 10) =throws=> #?(:clj clojure.lang.ExceptionInfo
                                          :cljs ExceptionInfo)))))
+
+(def example {:name {:doc "The name of this thing" :schema s/Str}
+              :age {:doc "The age, in aeons or centuries" :schema s/Int}
+              :more {:doc "More info"
+                     :schema {:doc "Additional data"
+                              :schema {s/Any s/Any}}}})
+(deftest schemas-with-docs
+  (testing "Will generate a schema definition"
+    (check (schemas/schema-for example) =expect=> {:name s/Str
+                                                   :age s/Int
+                                                   :more {s/Any s/Any}})))

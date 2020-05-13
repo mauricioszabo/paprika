@@ -142,7 +142,8 @@ not accept it AT ALL)"
 
 (defn- subschema? [data]
   (and (map? data)
-       (every? (comp #{:doc :schema} first) data)))
+       (= #{:doc :schema} (-> data keys set))
+       (-> data :doc string?)))
 
 (defn schema-for
   "Given a schema in the format {:key {:doc <some-doc> :schema <some-schema>}},

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+export TAG=$CIRCLE_TAG
+curl https://raw.githubusercontent.com/mauricioszabo/clj-lib-deployer/master/deploy-lein.bb -o deploy
+curl -L  https://github.com/borkdude/babashka/releases/download/v0.2.5/babashka-0.2.5-linux-amd64.zip -o bb.zip
+unzip bb.zip
+sudo mv bb /usr/bin
+chmod +x deploy
+./deploy

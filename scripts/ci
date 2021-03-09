@@ -1,0 +1,5 @@
+#!/bin/bash
+
+lein test &&
+npx shadow-cljs compile tests &&
+node out/all-tests.js
